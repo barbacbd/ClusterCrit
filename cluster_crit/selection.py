@@ -126,7 +126,7 @@ MetricChoices = {
     CI.Log_SS_Ratio.name: df_min_diff,
     CI.McClain_Rao.name: df_min,
     CI.PBM.name: df_max,
-    CI.Point_biserial.name: df_max,
+    CI.Point_Biserial.name: df_max,
     CI.Ratkowsky_Lance.name: df_max,
     CI.Ray_Turi.name: df_min,
     CI.Scott_Symons.name: df_min,

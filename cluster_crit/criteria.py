@@ -79,7 +79,7 @@ def getCriteriaNames(includeGDI=False, returnEnumerations=True):
     '''Get a list of the available internal clustering indices.
 
     :param includeGDI: When true the GDI indices are included
-    :param returnEnumeration: When true, return the list of
+    :param returnEnumerations: When true, return the list of
     enumerations, otherwise strings are returned.
 
     :return: available clustering criteria names
@@ -88,10 +88,10 @@ def getCriteriaNames(includeGDI=False, returnEnumerations=True):
 
     for ci in CriteriaInternal:
         if ci != CriteriaInternal.ALL:
-            if includeGDI or (not includeGDI and not ci.name.beginswith("GDI")):
+            if includeGDI or (not includeGDI and not ci.name.startswith("GDI")):
                 critNames.append(ci)
 
-    if not returnEnumeration:
+    if not returnEnumerations:
         critNames = [x.name for x in critNames]
 
     return critNames
