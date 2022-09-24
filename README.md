@@ -1,10 +1,10 @@
 # Cluster Crit
 
-The project is a python extension for the [cluster crit](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/viewer.html?pdfurl=https%3A%2F%2Fcran.r-project.org%2Fweb%2Fpackages%2FclusterCrit%2FclusterCrit.pdf&clen=129366&chunk=true) R package. The project also contains the ability to select the optimal results when running Cluster Criteria algorithms on any number of clusters. 
+The project is a python extension for the [cluster crit](https://cran.r-project.org/web/packages/clusterCrit/index.html) R package. The project also contains the ability to select the optimal results when running Cluster Criteria algorithms on any number of clusters. 
 
 ## Metrics
 
-The following metrics were all taken from the [cluster crit](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/viewer.html?pdfurl=https%3A%2F%2Fcran.r-project.org%2Fweb%2Fpackages%2FclusterCrit%2FclusterCrit.pdf&clen=129366&chunk=true) package in `R` found [here](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/viewer.html?pdfurl=https%3A%2F%2Fcran.r-project.org%2Fweb%2Fpackages%2FclusterCrit%2FclusterCrit.pdf&clen=129366&chunk=true). To view more information about these algorithms see the [cluster crit documentation](./clusterCrit.pdf). 
+The following metrics were all taken from the [cluster crit](https://cran.r-project.org/web/packages/clusterCrit/index.html) package in `R` found [here](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/viewer.html?pdfurl=https%3A%2F%2Fcran.r-project.org%2Fweb%2Fpackages%2FclusterCrit%2FclusterCrit.pdf&clen=129366&chunk=true). To view more information about these algorithms see the [cluster crit documentation](./clusterCrit.pdf). 
 
 | Cluster Crit Metric | Criteria to determine optimal cluster |
 | ------------------- | ------------------------------------- |
