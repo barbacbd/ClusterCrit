@@ -1,1 +1,2 @@
 exclude cluster_crit/*.R
+excluse cluster_crit/*.tmp

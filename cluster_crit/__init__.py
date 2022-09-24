@@ -25,4 +25,9 @@ from .cluster import *
 from .criteria import *
 from .selection import *
 
-__all__ = [ "clusterCrit", "CriteriaInternal", "getCriteriaNames", "select" ]
+__all__ = [
+    "clusterCrit",
+    "CriteriaInternal",
+    "getCriteriaNames",
+    "select"
+]
