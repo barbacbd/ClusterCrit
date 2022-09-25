@@ -1,2 +1,3 @@
 exclude cluster_crit/*.R
 excluse cluster_crit/*.tmp
+excluse cluster_crit/test*.py
