@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-from numpy import inf, nan
+from numpy import inf, nan, nanmax, nanmin
 from math import fabs
 from .criteria import CriteriaInternal as CI
 
@@ -41,6 +41,9 @@ def df_min_diff(row):
     local_min_value = None
 
     for i in range(1, len(row.values.tolist()), 1):
+        if None in (row[i], row[i-1]):
+            continue
+
         if row[i] in (-inf, inf, nan) or row[i-1] in (-inf, inf, nan):
             continue
 
@@ -66,6 +69,9 @@ def df_max_diff(row):
     local_max_value = None
 
     for i in range(1, len(row.values.tolist()), 1):
+        if None in (row[i], row[i-1]):
+            continue
+
         if row[i] in (-inf, inf, nan) or row[i-1] in (-inf, inf, nan):
             continue
 
@@ -82,8 +88,10 @@ def df_min(row):
     :param row: Pandas dataframe row
     :return: column name of the min value in the row
     '''
-    return row.idxmin()
-
+    df = row.dropna().values
+    if df.size > 0:
+        return df.argmin()
+    return None
 
 def df_max(row):
     '''Find the max in the dataframe row
@@ -91,7 +99,11 @@ def df_max(row):
     :poaram row: Pandas dataframe row
     :return: Column name of the max value in the row
     '''
-    return row.idxmax()
+    df = row.dropna().values
+    if df.size > 0:
+        return df.argmax()
+    return None
+
 
 # The dictionary of Algorithms with the name/kind of function
 # that should be applied to the entire set of outcomes for
