@@ -4,6 +4,8 @@
 
 <h2 align="center">
 
+[![Build](https://github.com/barbacbd/ClusterCrit/actions/workflows/python-package.yml/badge.svg)](https://github.com/barbacbd/ClusterCrit/actions/workflows/python-package.yml)
+[![GitHub latest commit](https://badgen.net/github/last-commit/barbacbd/ClusterCrit)](https://github.com/barbacbd/ClusterCrit/commit/)
 
 
 ## Description
