@@ -5,7 +5,7 @@
 <h2 align="center">
 
 [![Build](https://github.com/barbacbd/ClusterCrit/actions/workflows/python-package.yml/badge.svg)](https://github.com/barbacbd/ClusterCrit/actions/workflows/python-package.yml)
-[![PyPI version fury.io](https://badge.fury.io/py/ClusterCrit.svg)](https://pypi.python.org/pypi/ClusterCrit/)
+[![PyPI version fury.io](https://badge.fury.io/py/ClusterCrit.svg)](https://pypi.python.org/pypi/cluster-crit/)
 
 
 ## Description
