@@ -22,11 +22,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 import pytest
-from cluster_crit.criteria import getCriteriaNames, CriteriaInternal
+from cluster_crit.criteria import getCriteriaNames, CriteriaInternal, CriteriaExternal
 
 
-def testGetCriteriaNamesBase(subtests):
+def testGetCriteriaNamesBaseInt(subtests):
     '''getCriteriaNames:
+          internal=True
           includeGDI=False
           returnEnumeration=True
 
@@ -47,8 +48,9 @@ def testGetCriteriaNamesBase(subtests):
             assert o in expected
 
 
-def testGetCriteriaNamesIncludeGDI(subtests):
+def testGetCriteriaNamesIncludeGDIInt(subtests):
     '''getCriteriaNames:
+          internal=True
           includeGDI=True
           returnEnumeration=True
 
@@ -57,7 +59,7 @@ def testGetCriteriaNamesIncludeGDI(subtests):
     '''
     expected = [x for x in CriteriaInternal if x != CriteriaInternal.ALL]
 
-    output = getCriteriaNames(True, True)
+    output = getCriteriaNames(True, True, True)
 
     assert len(expected) == len(output)
 
@@ -66,8 +68,9 @@ def testGetCriteriaNamesIncludeGDI(subtests):
             assert o in expected
 
 
-def testGetCriteriaNamesStringsNoGDI(subtests):
+def testGetCriteriaNamesStringsNoGDIInt(subtests):
     '''getCriteriaNames:
+          internal=True
           includeGDI=False
           returnEnumeration=False
 
@@ -79,7 +82,7 @@ def testGetCriteriaNamesStringsNoGDI(subtests):
         if not x.name.startswith("GDI") and x != CriteriaInternal.ALL
     ]
 
-    output = getCriteriaNames(False, False)
+    output = getCriteriaNames(True, False, False)
 
     assert len(expected) == len(output)
 
@@ -88,8 +91,9 @@ def testGetCriteriaNamesStringsNoGDI(subtests):
             assert o in expected
 
 
-def testGetCriteriaNamesStringsWithGDI(subtests):
+def testGetCriteriaNamesStringsWithGDIInt(subtests):
     '''getCriteriaNames:
+          internal=True
           includeGDI=True
           returnEnumeration=False
 
@@ -98,7 +102,7 @@ def testGetCriteriaNamesStringsWithGDI(subtests):
     '''
     expected = [x.name for x in CriteriaInternal if x != CriteriaInternal.ALL]
 
-    output = getCriteriaNames(True, False)
+    output = getCriteriaNames(True, True, False)
 
     assert len(expected) == len(output)
 
@@ -106,3 +110,42 @@ def testGetCriteriaNamesStringsWithGDI(subtests):
         with subtests.test(o=o, expected=expected):
             assert o in expected
 
+
+def testGetCriteriaNamesBaseExt(subtests):
+    '''getCriteriaNames:
+          internal=False
+          includeGDI=False
+          returnEnumeration=True
+
+    This should skip all GDI values and the return value
+    will be a list of enumerations (CriteriaExternal).
+    '''
+    expected = [x for x in CriteriaExternal if x != CriteriaExternal.ALL]
+
+    output = getCriteriaNames(False, False, True)
+
+    assert len(expected) == len(output)
+
+    for o in output:
+        with subtests.test(o=o, expected=expected):
+            assert o in expected
+
+
+def testGetCriteriaNamesStringsExt(subtests):
+    '''getCriteriaNames:
+          internal=False
+          includeGDI=False
+          returnEnumeration=False
+
+    This should skip all GDI values and the return value
+    will be a list of strings.
+    '''
+    expected = [x.name for x in CriteriaExternal if x != CriteriaExternal.ALL]
+
+    output = getCriteriaNames(False, False, False)
+
+    assert len(expected) == len(output)
+
+    for o in output:
+        with subtests.test(o=o, expected=expected):
+            assert o in expected

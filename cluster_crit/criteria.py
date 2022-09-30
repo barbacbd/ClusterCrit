@@ -75,9 +75,33 @@ class CriteriaInternal(Enum):
     Xie_Beni = 42
 
 
-def getCriteriaNames(includeGDI=False, returnEnumerations=True):
+class CriteriaExternal(Enum):
+    '''All possible values that the Cran (R) package Cluster Crit can receive
+    for the extCriteria. The `ALL` type is handled slightly differently as
+    it should be the extension of only the valid values in this enumeration
+    rather than `ALL` in cluster crit.
+    '''
+    ALL = 0
+    Czekanowski_Dice = 1
+    Folkes_Mallows = 2
+    Hubert = 3
+    Jaccard = 4
+    Kulczynski = 5
+    McNemar = 6
+    Phi = 7
+    Precision = 8
+    Rand = 9
+    Recall = 10
+    Rogers_Tanimoto = 11
+    Russel_Rao = 12
+    Sokal_Sneath1 = 13
+    Sokal_Sneath2 = 14
+
+def getCriteriaNames(internal=True, includeGDI=False, returnEnumerations=True):
     '''Get a list of the available internal clustering indices.
 
+    :param internal: When true, the indices are all from CriteriaInternal, otherwise
+    CriteriaExternal.
     :param includeGDI: When true the GDI indices are included
     :param returnEnumerations: When true, return the list of
     enumerations, otherwise strings are returned.
@@ -86,8 +110,9 @@ def getCriteriaNames(includeGDI=False, returnEnumerations=True):
     '''
     critNames = []
 
-    for ci in CriteriaInternal:
-        if ci != CriteriaInternal.ALL:
+    CriteriaClass = CriteriaInternal if internal else CriteriaExternal
+    for ci in CriteriaClass:
+        if ci != CriteriaClass.ALL:
             if includeGDI or (not includeGDI and not ci.name.startswith("GDI")):
                 critNames.append(ci)
 

@@ -26,7 +26,7 @@ from rpy2 import robjects
 from rpy2.robjects.packages import importr, isinstalled
 from rpy2.robjects import numpy2ri
 from rpy2.robjects.vectors import StrVector
-from .criteria import CriteriaInternal
+from .criteria import CriteriaInternal, CriteriaExternal
 
 
 PackageNameR = 'clusterCrit'
@@ -43,37 +43,38 @@ if not isinstalled(PackageNameR):
 # define the R function that this script will use
 robjects.r(
     '''
-    crit <- function(dataset, labels, criteria) {
+    rIntCriteria <- function(dataset, labels, criteria) {
         ccData <- clusterCrit::intCriteria(dataset, unlist(labels), unlist(criteria))
         return(ccData)
+    }
+    
+    rExtCriteria <- function(part1, part2, criteria) {
+        ccData <- clusterCrit::extCriteria(unlist(part1), unlist(part2), unlist(criteria))
+        return(ccData)
+    }
+    
+    rBestCriterion <- function(x, crit) {
+        ccData <- clusterCrit::bestCriterion(x, crit)
     }
     '''
 )
 
 
-def clusterCrit(dataSet, labels, criteria, k):
+def intCriteria(traj, part, crit):
     '''Expose the clusterCrit::intCriteria funcion (initially created in R)
     to all users. intCriteria calculates various internal clustering
     validation or quality criteria. The list of all the supported criteria
     can be obtained with the `getCriteriaNames`.
 
-    The following is the original set of parameters for intCriteria:
+    :param traj [matrix] : the matrix of observations (trajectories).
+    :param part [vector] : the partition vector.
+    :param crit [vector] : a list containing CriteriaInternal indices to compute
 
-    traj [matrix] : the matrix of observations (trajectories).
-    part [vector] : the partition vector.
-    crit [vector] : a vector containing the names of the indices to compute
-
-    :param dataSet: The matrix of observations
-    :param labels: The partition vector
-    :param criteria: a vector containing the names of the indices to compute, see `getCriteriaNames`
-    :param k: The number of clusters
-
-    :return: Pandas Dataframe where the column is the number k (provided) and the rows
-    are the algorithms run within the cluster crit package
+    :return: Map of the criteria to the value
     '''
     _criteria = []
-    for c in criteria:
-        if  isinstance(c, CritSelection):
+    for c in crit:
+        if  isinstance(c, CriteriaInternal):
             _criteria.append(c)
 
     if not _criteria:
@@ -81,9 +82,63 @@ def clusterCrit(dataSet, labels, criteria, k):
 
     indices = [x.name for x in _criteria]
     numpy2ri.activate()
-    if 'crit' not in robjects.globalenv:
+    if 'rIntCriteria' not in robjects.globalenv:
         return None
 
-    applied_data = robjects.globalenv['crit'](dataSet, labels, indices)
+    applied_data = robjects.globalenv['rIntCriteria'](traj, part, indices)
     numpy2ri.deactivate()
-    return pd.DataFrame(applied_data, index=indices, columns=[str(k)])
+    return dict(zip(indices, applied_data))
+
+
+def extCriteria(part1, part2, crit):
+    '''Expose the clusterCrit::extCriteria funcion (initially created in R)
+    to all users. intCriteria calculates external clustering indices in order
+    to compare two partitions. The list of all the supported criteria
+    can be obtained with the `getCriteriaNames`.
+
+    :param part1 [vector] : the first partition vector.
+    :param part2 [vector] : the second partition vector.
+    :param crit [vector]  : a list containing CriteriaExternal indices to compute
+
+    :return: Map of the criteria to the value
+    '''
+    _criteria = []
+    for c in crit:
+        if  isinstance(c, CriteriaExternal):
+            _criteria.append(c)
+
+    if not _criteria:
+        return None
+
+    indices = [x.name for x in _criteria]
+    numpy2ri.activate()
+    if 'rExtCriteria' not in robjects.globalenv:
+        return None
+
+    applied_data = robjects.globalenv['rExtCriteria'](part1, part2, indices)
+    numpy2ri.deactivate()
+    return dict(zip(indices, applied_data))
+
+
+def bestCriterion(x, crit):
+    '''Expose the clusterCrit::bestCriterionn function (initially created in R)
+    to all users. `bestCriterion` returns the best index value according to a 
+    specified criterion. Given a vector of several clustering quality index values
+    computed with a given criterion, the function `bestCriterion` returns the index
+    of the "best" one in the sense of the specified criterio
+    
+    :param x [matrix]    : a numeric vector of quality index values.
+    :param crit [string] : a string specifying the name of the criterion which 
+    was used to compute the quality indices
+    
+    :return: The index in vector x of the best value according to the criterion
+    specified by the crit argument.
+    '''
+    
+    numpy2ri.activate()
+    if 'rBestCriterion' not in robjects.globalenv:
+        return None
+
+    index = robjects.globalenv['rBestCriterion'](x, crit)
+    numpy2ri.deactivate()
+    return index

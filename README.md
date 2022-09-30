@@ -70,3 +70,31 @@ The user will select one or more algorithms above using the configuration. Each 
 
 The user supplies a file containing all values, and `kmeans` is run on the dataset for each value of `k` (2 to 50). A pandas dataframe is generated where the row corresponds to the metric and each value in the row is the result of executing that metric on each value of `k`. In this example for `Ball_Hall` the `max diff` for values of the row are calculated and the result is the value of `k` that best fit that metric.  In the table above (looking at only the values provided), when `k` is 6 the max diff is observed.
 
+
+## Executable
+
+The package provides an executable to the installer, [ClusterCrit](https://github.com/barbacbd/ClusterCrit/blob/main/cluster_crit/__main__.py). The executable exposes the library as a managed application for easier use. The following options are provided:
+
+- `file` - The file is a **required** argument. _Please see below in `Input Data Format` for the expected file format_.
+
+- `dir` - The directory where output files will be located. _Default_ is set to `.`.
+
+- `criteria` - A _list_ of criteria. _Please see [CriteriaInternal](https://github.com/barbacbd/ClusterCrit/blob/main/cluster_crit/criteria.py#L27) for more information_.
+
+- `skip_gdi` - A Boolean. When present, this flag indicates that any criteria with `GDI` in the name will be skipped.
+
+
+## Input Data Format
+
+The user is required to input a file when using the exectuable. The user can also take advantage of the [file parsing](Add data here) function in the library to split a file manually when they wish to directly interact with the Cluster Crit library.
+
+_The expected file type is a `json` file_. The file requires the following tags:
+
+- `dataset` - A list of all data points. If the points are multi-dimensional use a list to represent each point (please do not include any labels, ex: "x", "y").
+
+- `clusters` - A list (same length as the number of data points) that contains the cluster number from 1 to k that the data point belongs to. The order **must** be the same as the order of the data set.
+
+- `k` - An integer representing the value of K used for clustering. Generally, this is the number of clusters that were generated.
+
+
+_If any of the above tags are missing, the data will be considered corrupt and will not be used_.
