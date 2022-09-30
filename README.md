@@ -2,99 +2,129 @@
 
 The project is a python extension for the [cluster crit](https://cran.r-project.org/web/packages/clusterCrit/index.html) `R` package. The project also contains the ability to select the optimal results when running Cluster Criteria algorithms on any number of clusters. 
 
-## Metrics
+# External Dependencies 
 
-The following metrics were all taken from the [cluster crit](https://cran.r-project.org/web/packages/clusterCrit/index.html) package in `R`. To view more information about these algorithms see the [cluster crit documentation](https://github.com/barbacbd/ClusterCrit/blob/main/clusterCrit.pdf). 
-
-| Cluster Crit Metric | Criteria to determine optimal cluster |
-| ------------------- | ------------------------------------- |
-| Ball_Hall | max diff |
-| Banfeld_Raftery | min |
-| C_index | min |
-| Calinski_Harabasz | max |
-| Davies_Bouldin | min |
-| Det_Ratio | min diff |
-| Dunn | max |
-| Gamma | max |
-| G_plus | min |
-| Ksq_DetW | max diff |
-| Log_Det_Ratio | min diff |
-| Log_SS_Ratio | min diff |
-| McClain_Rao | min |
-| PBM | max |
-| Ratkowsky_Lance | max |
-| Ray_Turi | min |
-| Scott_Symons | min |
-| S_Dbw | min |
-| Silhouette | max |
-| Tau | max |
-| Trace_W | max diff |
-| Trace_WiB | max diff |
-| Wemmert_Gancarski | max |
-| Xie_Beni | min |
-
-## Selection Algorithms
-
-The following functions assume that one or more cluster criteria mertrics were executed by providing several different input cluster sizes (k clusters). 
-
-### Min
-
-Find the minimum value of the outputs when run against several cluster numbers. For example, using the same data set run a clustering algorithm so that the number of clusters created are two through `N`.
-The optimal result would be the minimum value when running the same metric over each set of clusters.
-
-### Max
-
-Find the maximum value of the outputs when run against several cluster numbers. For example, using the same data set run a clustering algorithm so that the number of clusters created are two through `N`.
-The optimal result would be the maximum value when running the same metric over each set of clusters.
-
-### Min Diff
-
-Find the minimum difference value of the outputs when run against several cluster numbers. For example, using the same data set run a clustering algorithm so that the number of clusters created are two through `N`. The optimal result would be the minimum difference between two adjacent values when running the same metric over each set of clusters.
-
-### Max Diff
-
-Find the maximum difference value of the outputs when run against several cluster numbers. For example, using the same data set run a clustering algorithm so that the number of clusters created are two through `N`. The optimal result would be the maximum difference between two adjacent values when running the same metric over each set of clusters.
+The R programming language is a dependency of this project, and it **must** be installed prior to installing this project. Please visit the [R Downloads Page](https://www.r-project.org/).
 
 
-# What does this all mean?
+# Internal Criteria
 
-The user will select one or more algorithms above using the configuration. Each algorithm will be run on all 2 through `k` clusters. The second column above is the function that will be applied to the output when all clusters are created. To demonstrate, examine the example below. Take the following configuration variables 
+The function intCriteria calculates internal clustering indices. The list of all internal criteria can be found in [criteria.py](https://github.com/barbacbd/ClusterCrit/blob/main/cluster_crit/criteria.py).
 
-- Metric = `Ball_Hall`
-- K = `2-50`
-- Clustering = `kmeans`
+# External Criteria
 
-|    | k=2 | k=3 | k=4 | k=5 | k=6 | ... |
-| -- | --- | --- | --- | --- | --- | --- |
-| Ball Hall | 0.2342 | 1.23423 | 0.8924 | 1.20312 | 2.231 | ... |
+The function extCriteria calculates external clustering indices in order to compare two partitions. The list of all external criteria can be found in [criteria.py](https://github.com/barbacbd/ClusterCrit/blob/main/cluster_crit/criteria.py).
 
-The user supplies a file containing all values, and `kmeans` is run on the dataset for each value of `k` (2 to 50). A pandas dataframe is generated where the row corresponds to the metric and each value in the row is the result of executing that metric on each value of `k`. In this example for `Ball_Hall` the `max diff` for values of the row are calculated and the result is the value of `k` that best fit that metric.  In the table above (looking at only the values provided), when `k` is 6 the max diff is observed.
+# Best Criterion
+
+Given a vector of several clustering quality index values computed with a given criterion, the function bestCriterion returns the index of the "best" one in the sense of the specified criterion.
+Typically, a set of data has been clusterized several times (using different algorithms or specifying a different number of clusters) and a clustering index has been calculated each
+time. The bestCriterion function determines which value is considered the best according to the given clustering index. For instance, if one uses the Calinski_Harabasz index, the best
+value is the largest one. A list of all the supported criteria can be obtained with the getCriteriaNames function. The criterion name (crit argument) is case insensitive and can be abbreviated.
+
+# Get Criteria Names
+
+Get a list of Criteria Names.
+
+- The user can return Internal vs External Criteria Names by setting the `internal` variable to `True` vs `False` respectively.
+- When retrieving Internal Criteria, the user can set `includeGCI` to `False` to skip returning any criteria with GDI-XXX as the name.
+- The user can also control the return type by setting `returnEnumerations` to `True` (return Enumerations) or `False` to return the string representations of the criteria.
+
+# Examples
+
+The following sections are a set of brief/simple examples of this library. To setup/initialize these tests, you can use the following steps:
+
+1. Install All [External Dependencies](#external-dependencies).
+2. Install `kmeans1d`: `python -m pip install kmeans1d`
+3. Create the original set of data (this is a sample taken from a large data set).
+
+```python
+original = [
+    -0.018, -0.03, 0.025, -0.073, -0.007, 0.052, -0.042, -0.025, -0.056, 0.005,
+    0.131, 0.059, 0.15, 0.157, 0.036, 0.096, -0.027, -0.002, 0.069, 0.099,
+    0.067, 0.101, 0.105, 0.115, 0.108, -0.036, -0.109, -0.133, -0.061, -0.045,
+    -0.058, 0.017, 0.007, -0.093, 0.077, 0.085, 0.1, -0.005, 0.009, 0.16
+]
+```
+
+4. Create a wrapper for `kmeans` so that we can generate the clusters for the above data set.
+
+```python
+def k_means_wrapper(data_set, k):
+    matching_clusters, centroids = kmeans1dc(data_set, k)
+    # R uses values 1-N not 0-N-1, so let's update here
+    matching_clusters = [x+1 for x in matching_clusters]
+    return matching_clusters
+```
+
+5. Cluster the data using values of K = 2,3,4,5,6 ...
+
+```python
+clusters = [
+    k_means_wrapper(original, 2),
+    k_means_wrapper(original, 3),
+    k_means_wrapper(original, 4),
+    k_means_wrapper(original, 5),
+    k_means_wrapper(original, 6)
+]
+```
+
+You should now have values similar to the following:
+
+```python
+clusters = [
+    [1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 2],
+    [2, 2, 2, 1, 2, 3, 1, 2, 1, 2, 3, 3, 3, 3, 2, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 2, 1, 1, 1, 1, 1, 2, 2, 1, 3, 3, 3, 2, 2, 3],
+    [2, 2, 2, 1, 2, 3, 1, 2, 1, 2, 4, 3, 4, 4, 2, 3, 2, 2, 3, 3, 3, 3, 3, 3, 3, 2, 1, 1, 1, 1, 1, 2, 2, 1, 3, 3, 3, 2, 2, 4],
+    [2, 2, 3, 2, 3, 4, 2, 2, 2, 3, 5, 4, 5, 5, 3, 4, 2, 3, 4, 4, 4, 4, 4, 4, 4, 2, 1, 1, 2, 2, 2, 3, 3, 1, 4, 4, 4, 3, 3, 5],
+    [3, 2, 3, 2, 3, 4, 2, 2, 2, 3, 6, 4, 6, 6, 4, 5, 2, 3, 4, 5, 4, 5, 5, 5, 5, 2, 1, 1, 2, 2, 2, 3, 3, 1, 4, 5, 5, 3, 3, 6],
+]
+```
+
+These clusters can be used as parameters to IntCriteria. Follow similar steps to produce data for ExtCriteria.
 
 
-## Executable
+## Internal Criteria
 
-The package provides an executable to the installer, [ClusterCrit](https://github.com/barbacbd/ClusterCrit/blob/main/cluster_crit/__main__.py). The executable exposes the library as a managed application for easier use. The following options are provided:
+The following will receive the results of the clusters with the `Dunn` Criteria on cluster numbers two through six.
 
-- `file` - The file is a **required** argument. _Please see below in `Input Data Format` for the expected file format_.
+```python
+criteria = CriteriaInternal.Dunn
 
-- `dir` - The directory where output files will be located. _Default_ is set to `.`.
+values = []
+for cluster in clusters:
+    output = intCriteria(original, cluster, [criteria])
+    values.append(output[criteria.name])
+```
 
-- `criteria` - A _list_ of criteria. _Please see [CriteriaInternal](https://github.com/barbacbd/ClusterCrit/blob/main/cluster_crit/criteria.py#L27) for more information_.
+## External Criteria
 
-- `skip_gdi` - A Boolean. When present, this flag indicates that any criteria with `GDI` in the name will be skipped.
+```python
+from random import randint
 
+# generate two artificial partitions
+part1 = [randint(1,3) for _ in range(150)]
+part2 = [randint(1,5) for _ in range(150)]
 
-## Input Data Format
+output = extCriteria(part1, part2, [CriteriaExternal.Czekanowski_Dice])
+```
 
-The user is required to input a file when using the exectuable. The user can also take advantage of the [file parsing](Add data here) function in the library to split a file manually when they wish to directly interact with the Cluster Crit library.
+## Best Criterion
 
-_The expected file type is a `json` file_. The file requires the following tags:
+Continuing with the IntCriteria example above, the following will print the index of the best cluster size given the
+outputs of the Internal Crtieria evaluation.
 
-- `dataset` - A list of all data points. If the points are multi-dimensional use a list to represent each point (please do not include any labels, ex: "x", "y").
+```python
+crit = np.asarray(values)
+print(bestCriterion(crit, criteria.name))
+```
 
-- `clusters` - A list (same length as the number of data points) that contains the cluster number from 1 to k that the data point belongs to. The order **must** be the same as the order of the data set.
+## Get Criteria Names
 
-- `k` - An integer representing the value of K used for clustering. Generally, this is the number of clusters that were generated.
+The example will get all InternalCriteria, excluding `GDI-XXX` criteria, and the values will be returned as enumerations.
 
+```python
+criteria = getCriteriaNames(True, False, True)
+```
 
-_If any of the above tags are missing, the data will be considered corrupt and will not be used_.
+The provided parameters are defaults, and they do **not** need to be specified. 
