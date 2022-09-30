@@ -24,9 +24,9 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install external dependencies
-      run: |
-        sudo apt install r-base gcc gcc-c++
+    - r-lib/actions/setup-r@v2
+      with:
+        r-version: '3.5.3'
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
