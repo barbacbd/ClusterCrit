@@ -57,6 +57,20 @@ original = [
 ]
 ```
 
+**Note**: _It is advised that you convert this data when it is a 1-D data set like above_.
+
+```python
+import numpy as np
+
+original = np.asarray([
+    -0.018, -0.03, 0.025, -0.073, -0.007, 0.052, -0.042, -0.025, -0.056, 0.005,
+    0.131, 0.059, 0.15, 0.157, 0.036, 0.096, -0.027, -0.002, 0.069, 0.099,
+    0.067, 0.101, 0.105, 0.115, 0.108, -0.036, -0.109, -0.133, -0.061, -0.045,
+    -0.058, 0.017, 0.007, -0.093, 0.077, 0.085, 0.1, -0.005, 0.009, 0.16
+])
+original = original.reshape(-1, 1)
+```
+
 4. Create a wrapper for `kmeans` so that we can generate the clusters for the above data set.
 
 ```python
