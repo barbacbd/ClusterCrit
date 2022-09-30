@@ -27,7 +27,7 @@ jobs:
     - name: Install External Dependencies
       run: |
         sudo apt-get -y update
-        sudo apt-get install -y r-base r-base-devel
+        sudo apt-get install -y r-base
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
