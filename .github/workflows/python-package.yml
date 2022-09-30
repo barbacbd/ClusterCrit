@@ -12,11 +12,11 @@ on:
 jobs:
   build:
 
-    runs-on: fedora-latest
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
     - uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install external dependencies
       run: |
-        dnf install -y R gcc gcc-c++
+        apt install r-base gcc gcc-c++
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
