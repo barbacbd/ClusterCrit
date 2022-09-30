@@ -27,6 +27,7 @@ from rpy2.robjects.packages import importr, isinstalled
 from rpy2.robjects import numpy2ri
 from rpy2.robjects.vectors import StrVector
 from .criteria import CriteriaInternal, CriteriaExternal
+import numpy as np
 
 
 PackageNameR = 'clusterCrit'
@@ -55,6 +56,7 @@ robjects.r(
     
     rBestCriterion <- function(x, crit) {
         ccData <- clusterCrit::bestCriterion(x, crit)
+        return(ccData)
     }
     '''
 )
@@ -73,9 +75,12 @@ def intCriteria(traj, part, crit):
     :return: Map of the criteria to the value
     '''
     _criteria = []
-    for c in crit:
-        if  isinstance(c, CriteriaInternal):
-            _criteria.append(c)
+    if CriteriaInternal.ALL in crit:
+        _criteria = [x for x in CriteriaInternal if x != ClusterInternal.ALL]
+    else:
+        for c in crit:
+            if  isinstance(c, CriteriaInternal):
+                _criteria.append(c)
 
     if not _criteria:
         return None
@@ -87,7 +92,11 @@ def intCriteria(traj, part, crit):
 
     applied_data = robjects.globalenv['rIntCriteria'](traj, part, indices)
     numpy2ri.deactivate()
-    return dict(zip(indices, applied_data))
+
+    # returned results are a matrix, so we need to flatten the data since
+    # there should be no entries with multiple values 
+    final_data = [ad[0] if len(ad) == 1 else None for ad in applied_data]
+    return dict(zip(indices, np.asarray(final_data)))
 
 
 def extCriteria(part1, part2, crit):
@@ -103,9 +112,12 @@ def extCriteria(part1, part2, crit):
     :return: Map of the criteria to the value
     '''
     _criteria = []
-    for c in crit:
-        if  isinstance(c, CriteriaExternal):
-            _criteria.append(c)
+    if CriteriaExternal.ALL in crit:
+        _criteria = [x for x in CriteriaExternal if x != CriteriaExternal.ALL]
+    else:
+        for c in crit:
+            if  isinstance(c, CriteriaExternal):
+                _criteria.append(c)
 
     if not _criteria:
         return None
@@ -117,7 +129,11 @@ def extCriteria(part1, part2, crit):
 
     applied_data = robjects.globalenv['rExtCriteria'](part1, part2, indices)
     numpy2ri.deactivate()
-    return dict(zip(indices, applied_data))
+
+    # returned results are a matrix, so we need to flatten the data since
+    # there should be no entries with multiple values 
+    final_data = [ad[0] if len(ad) == 1 else None for ad in applied_data]
+    return dict(zip(indices, np.asarray(final_data)))
 
 
 def bestCriterion(x, crit):
@@ -134,11 +150,17 @@ def bestCriterion(x, crit):
     :return: The index in vector x of the best value according to the criterion
     specified by the crit argument.
     '''
-    
     numpy2ri.activate()
     if 'rBestCriterion' not in robjects.globalenv:
         return None
 
     index = robjects.globalenv['rBestCriterion'](x, crit)
     numpy2ri.deactivate()
-    return index
+
+    index = index[0]
+
+    try:
+        # convert to python indexing. The returned values are 1-N but we require 0-N-1
+        return int(index) - 1
+    except (TypeError, ValueError):
+        return None
