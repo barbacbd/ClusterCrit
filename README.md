@@ -1,28 +1,36 @@
-# Cluster Crit
+<h1 align="center">
+  <br>Cluster Criteria</br>
+</h1>
 
-The project is a python extension for the [cluster crit](https://cran.r-project.org/web/packages/clusterCrit/index.html) `R` package. The project also contains the ability to select the optimal results when running Cluster Criteria algorithms on any number of clusters. 
+<h2 align="center">
 
-# External Dependencies 
+
+
+## Description
+
+The project is a python extension for the [cluster crit](https://cran.r-project.org/web/packages/clusterCrit/index.html) `R` package. The project also contains the ability to select the optimal results when running Cluster Criteria algorithms on any number of clusters.
+
+## External Dependencies
 
 The R programming language is a dependency of this project, and it **must** be installed prior to installing this project. Please visit the [R Downloads Page](https://www.r-project.org/).
 
 
-# Internal Criteria
+## Internal Criteria
 
 The function intCriteria calculates internal clustering indices. The list of all internal criteria can be found in [criteria.py](https://github.com/barbacbd/ClusterCrit/blob/main/cluster_crit/criteria.py).
 
-# External Criteria
+## External Criteria
 
 The function extCriteria calculates external clustering indices in order to compare two partitions. The list of all external criteria can be found in [criteria.py](https://github.com/barbacbd/ClusterCrit/blob/main/cluster_crit/criteria.py).
 
-# Best Criterion
+## Best Criterion
 
 Given a vector of several clustering quality index values computed with a given criterion, the function bestCriterion returns the index of the "best" one in the sense of the specified criterion.
 Typically, a set of data has been clusterized several times (using different algorithms or specifying a different number of clusters) and a clustering index has been calculated each
 time. The bestCriterion function determines which value is considered the best according to the given clustering index. For instance, if one uses the Calinski_Harabasz index, the best
 value is the largest one. A list of all the supported criteria can be obtained with the getCriteriaNames function. The criterion name (crit argument) is case insensitive and can be abbreviated.
 
-# Get Criteria Names
+## Get Criteria Names
 
 Get a list of Criteria Names.
 
@@ -30,11 +38,11 @@ Get a list of Criteria Names.
 - When retrieving Internal Criteria, the user can set `includeGCI` to `False` to skip returning any criteria with GDI-XXX as the name.
 - The user can also control the return type by setting `returnEnumerations` to `True` (return Enumerations) or `False` to return the string representations of the criteria.
 
-# Examples
+## Examples
 
 The following sections are a set of brief/simple examples of this library. To setup/initialize these tests, you can use the following steps:
 
-1. Install All [External Dependencies](#external-dependencies).
+1. Install All External Dependencies (see external dependencies above).
 2. Install `kmeans1d`: `python -m pip install kmeans1d`
 3. Create the original set of data (this is a sample taken from a large data set).
 
@@ -84,7 +92,7 @@ clusters = [
 These clusters can be used as parameters to IntCriteria. Follow similar steps to produce data for ExtCriteria.
 
 
-## Internal Criteria
+### Internal Criteria
 
 The following will receive the results of the clusters with the `Dunn` Criteria on cluster numbers two through six.
 
@@ -97,7 +105,7 @@ for cluster in clusters:
     values.append(output[criteria.name])
 ```
 
-## External Criteria
+### External Criteria
 
 ```python
 from random import randint
@@ -109,7 +117,7 @@ part2 = [randint(1,5) for _ in range(150)]
 output = extCriteria(part1, part2, [CriteriaExternal.Czekanowski_Dice])
 ```
 
-## Best Criterion
+### Best Criterion
 
 Continuing with the IntCriteria example above, the following will print the index of the best cluster size given the
 outputs of the Internal Crtieria evaluation.
@@ -119,7 +127,7 @@ crit = np.asarray(values)
 print(bestCriterion(crit, criteria.name))
 ```
 
-## Get Criteria Names
+### Get Criteria Names
 
 The example will get all InternalCriteria, excluding `GDI-XXX` criteria, and the values will be returned as enumerations.
 
